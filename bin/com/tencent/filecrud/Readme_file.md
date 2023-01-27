@@ -2,7 +2,7 @@
 
 #### 主要实现功能
 
-[1. 创建目录功能](#1-创建目录)
+[1. 创建目录功能](#1. 创建目录)
 
 [2. 对于当前目录下的文件及文件夹以及文件夹下的文件的复制功能](#2-文件的复制)
 
@@ -16,23 +16,23 @@
     + 若 srcFileStr 文件夹内的文件与 destFileAllStr 文件夹中文件有重名的情况 则比对它们的大小
 
       + 5.1.1 若 srcFileStr 文件夹中 文件 比 destFileAllStr 文件夹中的同名文件 占用内存大 
-     
+    
         + 5.1.1.1 则将 destFileAllStr 文件夹中占用内存较小的同名文件 存放在 程序自创的 以 destFileAllStr 为参照兄弟级文件夹 同名文件质量较小 中 
      5.1.1.2 将 srcFileStr 文件夹中 同名文件 占用内存较大的文件 存放在 destFileAllStr 文件中
-     
-     
+    
+    
       + 5.1.2 若 srcFileStr 文件夹中 文件 比 destFileAllStr 文件夹中的同名文件 占用内存小 
         + 5.1.2.1 将 srcFileStr 文件夹中 同名文件 占用内存较小的文件 存放在 程序自创的 以 destFileAllStr 为参照兄弟级文件夹 同名文件质量较小 中 
 
 
       + 5.1.3 若 srcFileStr 文件夹中 文件 与 destFileAllStr 文件夹中的同名文件 占用内存相同
         + 5.1.3.1 将 srcFileStr 文件夹中 同名文件 占用内存较相同的文件 存放在 程序自创的 以 destFileAllStr 为参照兄弟级文件夹 同名文件质量相等 中 
-     
+
 [6. 打印日志功能](#6-生成打印日志)
 
 #### 对应的方法
 
-##### [1. 创建目录](#3-文件的去重合并效果演示)
+##### [1. 创建目录](#3-文件的去重合并效果演示) 
 
 > 能过如下代码可创建对应的目录
 
@@ -424,6 +424,12 @@ new File(System.getProperty("user.dir") + File.separator + "test").mkdir();
 > 前面几个方法的调用都用到了日志生成
 
 ![](../../../../Images/4.png)
+
+#### 项目源码地址
+
+[Gitee项目地址](https://gitee.com/JavaObjects/file-crud)
+
+[Github项目地址](https://github.com/javaobjects/FileCrud)
 
 **以上就是我关于 *Java-对文件的增删查改操作*  知识点的整理与总结的全部内容，希望对你有帮助。。。。。。。**
 
