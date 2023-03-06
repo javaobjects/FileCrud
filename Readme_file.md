@@ -439,6 +439,12 @@ new File(System.getProperty("user.dir") + File.separator + "test").mkdir();
 
 #### 扩展知识
 
+1. [eclipse如何创建java项目](https://www.php.cn/java/base/467960.html)
+
+2. [eclipse创建web项目](https://blog.csdn.net/Griffin1030/article/details/109398339)
+
+3. [eclipse问题 import java.io cannot be resolved](https://blog.csdn.net/u012063703/article/details/51605220)
+
 ***
 
 分割线

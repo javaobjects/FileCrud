@@ -1,8 +1,7 @@
-haha汉字来两个.-`!123-0
-haha汉字来两个.-`!123-1
-haha汉字来两个.-`!123-2
-haha汉字来两个.-`!123-3
-haha汉字来两个.-`!123-4
-haha汉字来两个.-`!123-5
-haha汉字来两个.-`!123-6
-haha汉字来两个.-`!123-7
+create table myLibary_book
+haha
+  book_id number(6) primary key,
+  book_name varchar2(40) not null,
+  lend_count number(3) not null,
+  status number(1) not null check(status in (0,1))---0表示借出，1表示在馆
+)

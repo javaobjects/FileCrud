@@ -33,7 +33,7 @@ public class FileChange {
 //		}
 
 //		deleteDirectoryLegacyIO("G:\\需要复制的文件\\Java测试文件夹\\照片分类\\新建文件夹",false);
-		concatFiles("G:\\需要复制的文件\\Java测试文件夹\\照片分类\\148开头文件", "G:\\需要复制的文件\\Java测试文件夹\\测试合并文件", null, null, null, null);
+//		concatFiles("此电脑\\MI 6\\内部存储设备\\DCIM\\WeChat\\image", "G:\\需要复制的文件\\新建文件夹", null, null, null, null);
 	}
 
 	/**

@@ -34,52 +34,49 @@ import java.util.List;
 public class AppointedLineNumberCRUD {
 
 	public static void main(String[] args) {
-//		try {
-//			setAppointedLineNumber(2, "我想要将第二行的 ff2 数据修改 ");
-//			addAppointedLineNumber(5, ""
-//					+ "2023/01/26\r\n"
-//					+ "睡眠\r\n"
-//					+ "1. 入睡\r\n"
-//					+ "2. 起床\r\n"
-//					+ "3. 深睡\r\n"
-//					+ "能量\r\n"
-//					+ "1. 早餐\r\n"
-//					+ "2. 午餐\r\n"
-//					+ "3. 晚餐\r\n"
-//					+ "4. 其它\r\n"
-//					+ "工作");
+		/**
+		 * 1. 完成聊天记录截图
+		 * 
+		 * 
+		 * 2. mylucky
+		 * 
+		 * 
+		 * 
+		 */
+//		String content = "1. mylucky";//平时日志记录
 
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		
-
-//		2. 完成AppointedLineNumberCRUD
-
-//		String content = ""
-//				+ "睡眠\r\n"
-//				+ "1. 入睡\r\n"
-//				+ "2. 起床\r\n"
-//				+ "3. 深睡\r\n"
-//				+ "能量\r\n"
-//				+ "1. 早餐\r\n"
-//				+ "2. 午餐\r\n"
-//				+ "3. 晚餐\r\n"
-//				+ "4. 其它\r\n"
-//				+ "工作";
-
-//		appendBybufferedWriter("1. mylucky", "D:\\alibaba\\studyLog\\study.log",true);
-//		appendBybufferedWriter("1. mylucky", null,true);
-//		System.out.println(readAppointedLineNumberByFileReader(-1,"D:\\alibaba\\studyLog\\study.log"));
+		String content = getFullTime()+"\r\n"
+				+ "睡眠\r\n"
+				+ "1. 入睡\r\n"
+				+ "2. 起床\r\n"
+				+ "3. 深睡\r\n"
+				+ "能量\r\n"
+				+ "1. 早餐\r\n"
+				+ "2. 午餐\r\n"
+				+ "3. 晚餐\r\n"
+				+ "4. 其它\r\n"
+				+ "工作";//早上第一次插入使用
+		appendBybufferedWriter(content, "D:\\alibaba\\studyLog\\study.log",false);//早上第一次插入使用
+		
+//		appendBybufferedWriter(content, "D:\\alibaba\\studyLog\\study.log",true);
+		System.out.println(readAppointedLineNumberByFileReader(-1,"D:\\alibaba\\studyLog\\study.log"));
 //		System.out.println(readAppointedLineNumberByFileReader(-1,null));
 
-//		   String text = "汉字汉字仮名かなカナ 0189 azAZ ./ ";
-//		     System.out.println(count(text));
-//		countNumOfWords("D:\\alibaba\\studyLog\\study.log");
-		countNumOfWords(null);
+//		countNumOfWords("E:\\简书\\程序语言\\Git\\14-Git-如何将本地项目上传到Gitee或Github？.md");
 		
+		
+//		try {
+//			setOrAddAppointedLineNumberDataByFiles(2, "haha", "set", null);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
+	
+
+
+	
+	
 	/**
 	 * <p>Title: countNumOfWords</p>  
 	 * <p>
@@ -214,7 +211,7 @@ public class AppointedLineNumberCRUD {
 	/**
 	 * <p>Title: setOrAddAppointedLineNumberDataByFiles</p>  
 	 * <p>
-	 *    Description: 更新指定行数据 或 在指定行数据后面添加数据
+	 *    Description: 更新或替换指定行数据 或 在指定行数据后面添加数据 从第一行开始
 	 * </p>  
 	 * <p>Copyright: Copyright (c) 2017</p>  
 	 * <p>Company: www.baidudu.com</p>  
