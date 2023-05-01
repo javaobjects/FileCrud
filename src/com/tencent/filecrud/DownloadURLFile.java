@@ -1,4 +1,4 @@
-package com.tencent.filecrud;
+package src.com.tencent.filecrud;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -11,32 +11,127 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DownloadURLFile {
     public static void main(String[] args) {
-    	
-        try {
-        	List<String> getStrBySubstringFromtxt = getStrBySubstringFromtxt("E:\\简书\\程序语言\\AngularJS\\4-AngularJS入门必学（四）.md",
-        			"![image.png](","?imageMogr2");
-        	for (int i = 0; i < getStrBySubstringFromtxt.size(); i++) {
-				String string = getStrBySubstringFromtxt.get(i);
-				System.out.println(string);
-	            downloadByUrl(string, 
-        		"E:\\简书\\程序语言\\AngularJS\\4-Images",String.valueOf(i + 1));
-			}
+
+//    	final String filePath = "E:\\Google\\vuepress-starter\\docs\\programBlog\\Eclipse\\7-Eclipse 配置JavaEE企业级项目.md";
+//    	final String imgPath = "E:\\Google\\vuepress-starter\\docs\\programBlog\\Eclipse\\assets\\7-Images";
+//    	final String newImgPath = "./assets/7-Images/";
+//    	final String beginStr = "![image.png](";
+//    	final String endStr = "?imageMogr2";  
+        
+    	//1. 先读取所有的文件看看是滞有认url形式存在的图片
+    	File directory = new File("E:\\Google\\vuepress-starter\\docs\\programBlog"); // 文件夹路径
+        File[] subDirectories = directory.listFiles(File::isDirectory); // 获取子文件夹
+        for (File subdirectory : subDirectories) {
         	
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        
-//        reNameStrBySubstringFromtxt("E:\\简书\\程序语言\\AngularJS\\4-AngularJS入门必学（四）.md", "5227364-", "?imageMogr2");
+        	File[] subFiles = subdirectory.listFiles(File::isFile);
+        	
+        	for (File file : subFiles) {
+            	String savePath = file.getParent() + File.separator + "assets" + File.separator + file.getName().split("-")[0] + "-Images";
+            	String newImgPath =  "./assets/" + file.getName().split("-")[0] + "-Images/";
+            	System.out.println(savePath);
+            	//2. 若有则创建对应的文件以务下载
+//            	List<String> strBySubstringFromtxt = getStrBySubstringFromtxt(file);
+//            	for (int i = 0; i < strBySubstringFromtxt.size(); i++) {
+            	//3. 下载图片
+//            		downloadByUrl(strBySubstringFromtxt.get(i), savePath, String.valueOf(i + 1));
+//    				
+//    			}
+            	
+            	
+            	// 一定要让上面的下载完成方法执行完成 而后注释上面的执行 再执行更改文本的方法
+            	//4. 将文件中的url图片地址更换成本地相当路径地址
+    			try {
+    				reNameStrBySubstringFromtxt(file, newImgPath);
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+			}
+
+		}
     }
+    
+    
+    /**
+     * <p>Title: getStrBySubstringFromtxt</p>
+     * <p>
+     *    Description:
+     *    将md文件中在线的url图片地址存入数组，且创建对应的图片文件夹以供后续下载,只需传入对应的md文件即可
+     * </p>
+     * <p>Copyright: Copyright (c) 2017</p>
+     * <p>Company: www.baidudu.com</p>
+     * @param file
+     * @return
+     * @author xianxian
+     * @date 2023年5月1日下午10:41:43
+     * @version 1.0
+     */
+	private static List<String> getStrBySubstringFromtxt(File file) {
+		List<String> strArray = new ArrayList<String>();//存放Img 地址的
+		String regex = "!\\[[^\\]]*\\]\\((.*?)\\)";//匹配url正则
+    	Pattern pattern = Pattern.compile(regex);
+		try {// try代码块，当发生异常时会转到catch代码块中
+			// 创建类进行文件的读取，并指定编码格式为utf-8
+			InputStreamReader read = new InputStreamReader(new FileInputStream(file.getAbsolutePath()), "utf-8");
+			BufferedReader in = new BufferedReader(read);// 可用于读取指定文件
+
+			String linDatastr = null;// 定义一个字符串类型变量linDatastr 用于存放一行的文本数据
+			while ((linDatastr = in.readLine()) != null) {// readLine()方法, 用于读取一行,只要读取内容不为空就一直执行
+				
+			 	Matcher matcher = pattern.matcher(linDatastr);
+		    	while (matcher.find()) {
+		    		/**
+		    		 * 将 ![gjhgjg](https://upload-images.jianshu.io/upload_images/5227364-aa6e64559b66d342.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+		    		 * 提取为 https://upload-images.jianshu.io/upload_images/5227364-aa6e64559b66d342.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240
+		    		 */
+		    	    String imageUrl = matcher.group(1);
+		    	    int index = imageUrl.indexOf('?'); // 找到问号
+		    	    if (index >= 0) {//找不到index为-1则不存入
+		    	        imageUrl = imageUrl.substring(0, index); // 去掉问号及其后面的部分
+		    	        strArray.add(imageUrl);
+		    	        System.out.println("imageUrl: " + imageUrl);
+	
+		    	        /**
+		    	         * 1. 根据传入的参数 pathStr 7-Eclipse 配置JavaEE企业级项目.md"
+		    	         * 判断文件的同级目录是否存在 assets 文件夹 如果不存在则创建它
+		    	         * 2. 判断 assets 文件夹下是否存在 Num-Images 文件夹 若不存在则创建 num的取值为 传入的pathStr的值的名称以 - 分隔取下标0的值
+		    	         * 
+		    	         */
+		    	        
+		    	        // 1. 获取文件所在目录
+		    	        String parentPath = file.getParent();
+		    	        // 2. 判断 assets 目录是否存在，不存在则创建
+		    	        File assetsDir = new File(parentPath, "assets");
+		    	        if (!assetsDir.exists()) {
+		    	            assetsDir.mkdir();
+		    	            System.out.println(file.getName() + "创建了文件夹： assets" );
+		    	        }
+		    	        // 3. 获取 num 的值
+		    	        String[] pathArr = file.getName().split("-");
+		    	        String num = pathArr[0];
+		    	        // 4. 判断 Num-Images 目录是否存在，不存在则创建
+		    	        File numImagesDir = new File(assetsDir, num + "-Images");
+		    	        if (!numImagesDir.exists()) {
+		    	            numImagesDir.mkdir();
+		    	            System.out.println(file.getName() + "创建了文件夹： " +  num + "-Images");
+		    	        }
+		    	    }
+		    	}
+			}
+			in.close();// 关闭流
+		} catch (IOException e) {// 当try代码块有异常时转到catch代码块
+			e.printStackTrace();// printStackTrace()方法是打印异常信息在程序中出错的位置及原因
+		}
+		return strArray;
+	}
+    
+    
     
     /**
      * <p>Title: reNameStrBySubstringFromtxt</p>
@@ -53,90 +148,48 @@ public class DownloadURLFile {
      * @author xianxian
      * @date 2023年2月18日上午12:46:48
      * @version 1.0
+     * @throws Exception 
      */
-    private static void reNameStrBySubstringFromtxt(String pathStr,String beginStr,String endStr) {
+    @SuppressWarnings("static-access")
+	private static void reNameStrBySubstringFromtxt(File file,String newImgPath) throws Exception {
 		try {// try代码块，当发生异常时会转到catch代码块中
-				// 读取指定的文件
-			if (pathStr == null || pathStr.equals("")) {
-				pathStr = System.getProperty("user.dir") + File.separator + "log.log";
-			}
 			// 创建类进行文件的读取，并指定编码格式为utf-8
-			InputStreamReader read = new InputStreamReader(new FileInputStream(pathStr), "utf-8");
+			InputStreamReader read = new InputStreamReader(new FileInputStream(file.getAbsolutePath()), "utf-8");
 			BufferedReader in = new BufferedReader(read);// 可用于读取指定文件
-
+			String regex = "!\\[[^\\]]*\\]\\((.*?)\\)";//匹配url正则
+	    	Pattern pattern = Pattern.compile(regex);
+	    	
 			String linDatastr = null;// 定义一个字符串类型变量linDatastr 用于存放一行的文本数据
 			int newNameNum = 1;
 			int lineNum = 0;
 			while ((linDatastr = in.readLine()) != null) {// readLine()方法, 用于读取一行,只要读取内容不为空就一直执行
 				lineNum++;
-				if (linDatastr.indexOf(beginStr) != -1) {
-					String url = linDatastr.substring(linDatastr.indexOf(beginStr) + beginStr.length(),
-							linDatastr.indexOf(endStr));
-					System.out.println(url);
-					
-					String newImgAdress = "![](1-Images/" + String.valueOf(newNameNum) + url.substring(url.length() -4) + ")";
-					
-					System.out.println("新地址： " + newImgAdress);
-					
-					System.out.println("更改了 ： " + lineNum + " 行数据");
-					
-					try {
-						new AppointedLineNumberCRUD().setOrAddAppointedLineNumberDataByFiles(lineNum, newImgAdress, "set", pathStr);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					newNameNum++;
-				}
+			 	Matcher matcher = pattern.matcher(linDatastr);
+		    	while (matcher.find()) {
+		    	    String imageUrl = matcher.group(1);
+		    	    int index = imageUrl.indexOf('?'); // 找到问号
+		    	    if (index >= 0) {//找不到index为-1则不存入
+		    	        imageUrl = imageUrl.substring(0, index); // 去掉问号及其后面的部分
+
+		    	        System.out.println("imageUrl: " + imageUrl);
+	
+		    	        String newImgAdress = "![](" + newImgPath  + String.valueOf(newNameNum) + imageUrl.substring(imageUrl.length() -4) + ")";
+		    	        System.out.println("新地址： " + newImgAdress);
+						
+						System.out.println("更改了 ： " + lineNum + " 行数据");
+						
+						new AppointedLineNumberCRUD().setOrAddAppointedLineNumberDataByFiles(lineNum, newImgAdress, "set", file.getAbsolutePath());
+						newNameNum++;
+		    	        
+		    	    }
+		    	}
+				
 			}
 			in.close();// 关闭流
 		} catch (IOException e) {// 当try代码块有异常时转到catch代码块
 			e.printStackTrace();// printStackTrace()方法是打印异常信息在程序中出错的位置及原因
 		}
     }
-    
-    
-    /**
-     * <p>Title: getStrBySubstringFromtxt</p>  
-     * <p>
-     *    Description: 
-     *    在文本中找到所需要的字符串 交将其存入集合
-     *    例 找出   src: url(https://fonts/ieVi2ZhZI2eCN5jzbjEETS9weq8-32meGCsYb8td.woff2) format('woff2');
-     *    中url 地址
-     * </p>  
-     * <p>Copyright: Copyright (c) 2017</p>  
-     * <p>Company: www.baidudu.com</p>  
-     * @param pathStr 需要读取的文本路径
-     * @param beginStr 需要在每行中以 什么样的 字符串 开始找所需要的字符串
-     * @param endStr 需要在每行中以 什么样的 字符串 结束 找所需要的字符串 
-     * @return  
-     * @author xianxian
-     * @date 2023年1月28日  
-     * @version 1.0
-     */
-	private static List<String> getStrBySubstringFromtxt(String pathStr,String beginStr,String endStr) {
-		List<String> strArray = new ArrayList<String>();
-		try {// try代码块，当发生异常时会转到catch代码块中
-				// 读取指定的文件
-			if (pathStr == null || pathStr.equals("")) {
-				pathStr = System.getProperty("user.dir") + File.separator + "log.log";
-			}
-			// 创建类进行文件的读取，并指定编码格式为utf-8
-			InputStreamReader read = new InputStreamReader(new FileInputStream(pathStr), "utf-8");
-			BufferedReader in = new BufferedReader(read);// 可用于读取指定文件
-
-			String linDatastr = null;// 定义一个字符串类型变量linDatastr 用于存放一行的文本数据
-			while ((linDatastr = in.readLine()) != null) {// readLine()方法, 用于读取一行,只要读取内容不为空就一直执行
-				if(linDatastr.indexOf(beginStr) != -1) {
-					System.out.println(linDatastr.substring(linDatastr.indexOf(beginStr) + beginStr.length(), linDatastr.indexOf(endStr)));
-					strArray.add(linDatastr.substring(linDatastr.indexOf(beginStr) + beginStr.length(), linDatastr.indexOf(endStr)));
-				}
-			}
-			in.close();// 关闭流
-		} catch (IOException e) {// 当try代码块有异常时转到catch代码块
-			e.printStackTrace();// printStackTrace()方法是打印异常信息在程序中出错的位置及原因
-		}
-		return strArray;
-	}
 	
 	/**
 	 * <p>Title: downloadByUrl</p>

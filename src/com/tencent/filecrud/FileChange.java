@@ -1,4 +1,4 @@
-package com.tencent.filecrud;
+package src.com.tencent.filecrud;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * <p>Title: FileChange</p>  
@@ -34,6 +37,7 @@ public class FileChange {
 
 //		deleteDirectoryLegacyIO("G:\\需要复制的文件\\Java测试文件夹\\照片分类\\新建文件夹",false);
 //		concatFiles("此电脑\\MI 6\\内部存储设备\\DCIM\\WeChat\\image", "G:\\需要复制的文件\\新建文件夹", null, null, null, null);
+		
 	}
 
 	/**
