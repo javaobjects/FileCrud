@@ -1,4 +1,4 @@
-package src.com.tencent.filecrud;
+package com.tencent.filecrud;
 
 import java.io.BufferedWriter;
 import java.io.File;
