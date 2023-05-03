@@ -19,6 +19,13 @@ import java.util.List;
  *    Description:
  *    此类有如下作用：
  *    1. 按文件数量由小及大生成侧边栏的json代码
+			{
+                title: "",
+                collapsable: true,//默认true 折叠
+                initialOpenGroupIndex: -999,// 可选的, 默认值是 0
+                children: [
+                ]
+            }
  *    2. 统计博文数量
  * </p>
  * @author xianxian
@@ -31,6 +38,7 @@ public class FileVuePress {
 	
 	
 	public static void main(String[] args) {
+		
 		int CountFiles = 0;
 		File[] sortDirectoryBycountFiles = sortDirectoryBycountFiles(ABSOLUTEPATH);
 		for (File file : sortDirectoryBycountFiles) {
@@ -282,7 +290,7 @@ public class FileVuePress {
 //	            String pathFileName = fileItem.getName().split(".md")[0];
 	            String pathFileName = fileItem.getName().substring(0, fileItem.getName().length()-3);
 	            String fileRealName = getFileRealName(fileItem);
-	            sbcJson.append("{title: \"").append(fileRealName).append("\", path:\"").append(pathVal).append(pathFileName).append("\"}");
+	            sbcJson.append("        {title: \"").append(fileRealName).append("\", path:\"").append(pathVal).append(pathFileName).append("\"}");
 	            if (i != lastIndex) {
 	                sbcJson.append(",\r\n");
 	            }else {
