@@ -1,6 +1,8 @@
 package com.tencent.filecrud;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -33,7 +35,7 @@ import java.util.List;
  */
 public class FileVuePress {
 	
-	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-starter\\docs\\programBlog";
+	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
 //	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-starter\\otherBlog";
 	
 	
@@ -43,13 +45,274 @@ public class FileVuePress {
 		File[] sortDirectoryBycountFiles = sortDirectoryBycountFiles(ABSOLUTEPATH);
 		for (File file : sortDirectoryBycountFiles) {
 			CountFiles += file.listFiles(File::isFile).length;
+			String fileName = file.getName();
+			String fileXdPaht = getPathVal(file);
 			// 打印文件名、目录中文件数以及所需格式的路径
 //			System.out.println(file.getName() + " : " + file.listFiles(File::isFile).length + " : " + getPathVal(file));
 
+//			System.out.println("{text: " + '"' +fileName +  '"' + ", link:"+  '"' + fileXdPaht + "/" +  '"' + "},");
+//			System.out.println('"' + fileXdPaht + "/" +  '"' + ":" +  '"' + "structure" +  '"' + ",");
+			
+//			if(fileName.equals("Oracle")) {
+			if(fileName.equals("MySql")) {
+				File[] listFiles = sortMdFileByNum(file.listFiles(File::isFile));
+				//这里需要排序
+//				sortDirectoryBycountFiles(file.getAbsolutePath());
+				
+
+		        
+		        // 输出排序结果
+		        for (File listfile : listFiles) {
+//		            System.out.println(listfile.getName());
+//		            System.out.println('"' + listfile.getName().substring(0, listfile.getName().length()-3) + '"' + "," );
+		        }
+		        
+		        
+				
+			}
+			
+			creatREADMEandWriteContent(file);
 		}
 //		System.out.println("总计博客： " + CountFiles);
-		System.out.println(getSidebarJsonSbr(sortDirectoryBycountFiles).toString());
+//		System.out.println(getSidebarJsonSbr(sortDirectoryBycountFiles).toString());
 	}
+	
+	
+	
+	/**
+	 * <p>Title: creatREADMEandWriteContent</p>
+	 * <p>
+	 *    Description:
+	 *    本方法实现以下功能：
+	 *    1. 根据所提供的文件夹查找该文件夹内是否含有名为 README.md 的文件
+	 *    2. 若存在则清空其内容写入新的内容 写入的内容 命名变量 readmeContent
+	 *    3. 若不存则创建名为 README.md 文件
+	 *    4. readmeContent的值为
+---
+star: 当前文件夹含有.md文件拉数量
+date: 当前文件夹的创建时间
+category:
+    - 当前文件夹的名字
+---
+
+# 当前文件夹的名字
+
+:::tip
+number. 当前文件夹内文件的名字
+:::
+	 *  
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @param file
+	 * @author xianxian
+	 * @date 2023年5月7日下午8:05:55
+	 * @version 1.0
+	 */
+	private static void creatREADMEandWriteContent(File file) {
+		File readmeFile = new File(file, "README.md");
+		if(isFileExistInDirectory(file, "README.md")) {
+			//存在清空文件内容
+			try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(readmeFile));
+				writer.write("");
+				writer.close();
+				System.out.println(file.getName() + "存在readme则清空内容");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else {
+			//不存在创建文件 README.md 
+			try {
+				readmeFile.createNewFile();
+				System.out.println(file.getName() + "不存在则创建内容");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		//获取内容
+		StringBuilder readmeContent = getReadmeContent(file);
+		//写入内容
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(readmeFile, true));
+			writer.write(readmeContent.toString());
+			writer.close();
+			System.out.println("写入成功");
+			System.out.println(readmeContent.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * <p>Title: getReadmeContent</p>
+	 * <p>
+	 *    Description:
+	 *    根据所给的文件夹，生成 README.md 所需要的内容
+---
+star: 当前文件夹含有.md文件拉数量
+date: 当前文件夹的创建时间
+category:
+    - 当前文件夹的名字
+---
+
+# 当前文件夹的名字
+
+:::tip
+number. 当前文件夹内文件的名字
+:::  
+	 *    
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @param file
+	 * @return
+	 * @author xianxian
+	 * @date 2023年5月7日下午8:25:12
+	 * @version 1.0
+	 */
+	private static StringBuilder getReadmeContent(File file) {
+		StringBuilder readmeContent = new StringBuilder();
+		StringBuilder tipContent = new StringBuilder();
+		//对文件进行排序 按数值由小及大
+		File[] fileArray = sortMdFileByNum(file.listFiles(File::isFile));
+		
+		String nextLine = "\n";
+		
+		//当前文件夹的文件数量
+		int fileLength = countFiles(file);
+		
+		//获取 README.md 的创建时间
+		String creatTime = "";
+		
+		for (int i = 0; i < fileArray.length; i++) {
+			File mdFile = fileArray[i];
+			if(mdFile.getName().equals("README.md")) {
+				try {
+					creatTime = getFileCreatTime(mdFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}else {
+				tipContent.append((i+1) + ". " + getFileRealName(mdFile) + nextLine);
+			}
+		}
+		
+//		---
+//		star: 当前文件夹含有.md文件拉数量
+//		date: 当前文件夹的创建时间
+//		category:
+//		    - 当前文件夹的名字
+//		---
+//
+//		# 当前文件夹的名字
+//
+//		:::tip
+//		number. 当前文件夹内文件的名字
+//		:::  
+		readmeContent.append("---" + nextLine);
+		readmeContent.append("star: " + fileLength + nextLine);
+		readmeContent.append("date: " + creatTime + nextLine);
+		readmeContent.append("category:" + nextLine);
+		readmeContent.append("    - " + file.getName() + nextLine);
+		readmeContent.append("---" + nextLine);
+		readmeContent.append(nextLine);
+		readmeContent.append("# "+ file.getName() + nextLine);
+		readmeContent.append(nextLine);
+		readmeContent.append(":::tip" + nextLine);
+		readmeContent.append(tipContent);
+		readmeContent.append(":::" + nextLine);
+		return readmeContent;
+	}
+	
+	
+
+	
+	
+	
+	/**
+	 * <p>Title: isFileExistInDirectory</p>
+	 * <p>
+	 *    Description:
+	 * 		判断某个文件夹内是否含有某个文件
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @param directory
+	 * @param fileName
+	 * @return
+	 * @author xianxian
+	 * @date 2023年5月7日下午8:15:38
+	 * @version 1.0
+	 */
+    public static boolean isFileExistInDirectory(File directory, String fileName) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            return false;
+        }
+
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return false;
+        }
+
+        for (File file : files) {
+            if (file.isFile() && file.getName().equals(fileName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+	
+	
+	
+	
+	/**
+	 * <p>Title: sortMdFileByNum</p>
+	 * <p>
+	 *    Description:
+	 *    将文件夹里的Md文件按数字由小及大排序
+	 *    注：本方法只考虑文件夹内含有 number-xxxx.md文件以及醉多一个README.md的情况存在
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @param listFiles
+	 * @return
+	 * @author xianxian
+	 * @date 2023年5月7日下午8:00:17
+	 * @version 1.0
+	 */
+	private static File[] sortMdFileByNum(File[] listFiles) {
+		  // 使用匿名内部类创建 Comparator 对象，根据文件名进行排序
+        Arrays.sort(listFiles, new Comparator<File>() {
+            @Override
+            public int compare(File f1, File f2) {
+                // 提取文件名中的数字
+                int n1 = extractNumber(f1.getName());
+                int n2 = extractNumber(f2.getName());
+                // 按照数字大小进行比较
+                return Integer.compare(n1, n2);
+            }
+
+            private int extractNumber(String name) {
+                // 从字符串开头开始提取数字，直到遇到非数字字符
+                int i = 0;
+                while (i < name.length() && Character.isDigit(name.charAt(i))) {
+                    i++;
+                }
+                if (i == 0) {
+                	return Integer.MIN_VALUE; // 如果字符串开头不是数字，则返回最小值
+   
+                }
+                return Integer.parseInt(name.substring(0, i));
+            }
+        });
+		return listFiles;
+	}
+	
+	
 
 	
 	/**
@@ -135,7 +398,7 @@ public class FileVuePress {
 	 * <p>Title: sortDirectoryBycountFiles</p>
 	 * <p>
 	 *    Description:
-	 *    根据给出的路径，对其含有文件的文件夹根据含有文件的数理进行排序
+	 *    根据给出的路径，对其含有 .md文件 的文件夹根据含有文件的数量进行排序
 	 *    注：只针对含有文件的文件夹排序，若子文件夹没有文件就找子子文件夹，一直找到有文件的文件夹
 	 * </p>
 	 * <p>Copyright: Copyright (c) 2017</p>
@@ -351,7 +614,7 @@ public class FileVuePress {
 		String fileRealName = null;
 		fileRealName = file.getName().substring(
 				file.getName().indexOf("-") + 1, 
-				file.getName().indexOf(".md")
+				file.getName().length()-3
 				);
 		return fileRealName;
 	}

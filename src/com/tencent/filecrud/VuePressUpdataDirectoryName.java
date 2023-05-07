@@ -24,28 +24,28 @@ import java.util.stream.IntStream;
 
 public class VuePressUpdataDirectoryName {
 	
-//	final static String FOLDERPATH = "E:\\Google\\vuepress-starter\\docs\\programBlog";
-	final static String FOLDERPATH = "E:\\Google\\vuepress-starter\\test";
+	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\programBlog";
+//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\test";
 	final static int NUMBER = 182;
 	
 	
 	// 随机生成一个位置数组
-    private static String[] locations = {"北京", "上海", "深圳", "广州", "成都", "杭州", "香港", "台北"};
-    private static Random random = new Random();
+//    private static String[] locations = {"北京", "上海", "深圳", "广州", "成都", "杭州", "香港", "台北"};
+//    private static Random random = new Random();
     
     
 	public static void main(String[] args) {
 //		renameNumberImages(FOLDERPATH, NUMBER);//测试通过 22:13
 //		
-//		try {
+		try {
 //			renameAndModifyFiles(FOLDERPATH, NUMBER);//测试通过 22:40
 			
-//			manipulateFiles(FOLDERPATH);//测试成功23:38
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+			manipulateFiles(FOLDERPATH);//测试成功23:38
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		processFiles(FOLDERPATH);//测试成功 03:47
+//		processFiles(FOLDERPATH);//测试成功 03:47
 		
 //		changeTitle(FOLDERPATH);//测试成功 04:05
 		
@@ -61,7 +61,123 @@ public class VuePressUpdataDirectoryName {
 //		}
 	}
 	
-	
+	/**
+	 * <p>Title: manipulateFiles</p>
+	 * <p>
+	 *    Description:
+	 *    该方法读取文件夹的所有子文件，并做出如下操作：
+			1. 找出所有number-xxxxxx.md的文件;
+			2. 读取该文件的创建时间
+			3. 读取该文件的title title值为 去掉头部的number-以及尾部的.md
+			4. 读取该文件的内容若有以 '# '开头的行并进行如下判断对title进行赋值,
+			如果此值也为number-xxxxxxx.md的格式则也要去掉头部的number-以及尾部的.md，若此值不是number-xxxxxxx.md这种格式，则title的值就为'# '后面的值
+			6. 创建一个数组里面的值为[北京,上海,深圳,广州,成都,杭州,香港,台北]每次随机取一个下标的值并赋值给location
+			7. 将如下格式的文件插入找到的number-xxxxx.md文件的头部
+			---
+			title: title
+			date: XXXX-XXX-XXX XXX:XXXX:XXX
+			author: 涎涎
+			location: location
+			---
+			
+---
+title: title
+author: 涎涎
+date: 2020-01-01 19:15:12
+icon: page
+category:
+- Oracle
+tag:
+- Oracle
+head:
+    - - meta
+      - name: keywords
+        content: title
+---
+			
+	 *    
+	 *    
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @param folderPath
+	 * @throws IOException
+	 * @author xianxian
+	 * @date 2023年5月3日下午11:36:54
+	 * @version 1.0
+	 */
+	public static void manipulateFiles(String folderPath) throws IOException {
+	    // 获取当前文件夹对象
+	    File dir = new File(folderPath);
+	    if (dir.isDirectory()) {
+	        File[] files = dir.listFiles();
+	        for (File file : files) {
+	            if (file.isDirectory()) {
+	                // 递归调用处理子目录
+	                manipulateFiles(file.getAbsolutePath());
+	            } else {
+	                // 获取文件名
+	                String fileName = file.getName();
+	                // 使用正则表达式匹配文件名
+	                Pattern pattern = Pattern.compile("^(\\d+)-(.+\\.md)$");
+	                Matcher matcher = pattern.matcher(fileName);
+	                if (matcher.matches()) {
+	                    // 获取匹配结果中的数字部分
+	                    int number = Integer.parseInt(matcher.group(1));
+	                    // 读取文件创建时间
+	                    BasicFileAttributes attrs = Files.readAttributes(Paths.get(file.getAbsolutePath()), BasicFileAttributes.class);
+
+	                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	                    String formattedDateTime = formatter.format(new Date(attrs.creationTime().toMillis()));
+	                    // 读取文件内容中的 title 和 location
+	                    BufferedReader reader = new BufferedReader(new FileReader(file));
+	                    String line;
+	                    String title = matcher.group(2).replaceAll("^\\d+-|\\.md$", "");
+//	                    String location = locations[random.nextInt(locations.length)];
+	                    while ((line = reader.readLine()) != null) {
+	                        if (line.startsWith("# ")) {
+	                            // 若有以 '# '开头的行则修改title
+	                            String subLine = line.substring(2);
+	                            Pattern innerPattern = Pattern.compile("^(\\d+)-(.+\\.md)$");
+	                            Matcher innerMatcher = innerPattern.matcher(subLine);
+	                            if (innerMatcher.matches()) {
+	                                title = innerMatcher.group(2).replaceAll("^\\d+-|\\.md$", "");
+	                            } else {
+	                                title = subLine.trim();
+	                            }
+	                        } 
+//	                        else if (line.startsWith("location: ")) {
+//	                            // 若有 location 属性则修改 location
+//	                            location = line.replaceAll("^location:\\s*", "");
+//	                        }
+	                    }
+	                    reader.close();
+	                    // 插入文件头部
+	                    String fileContent = "---\n" +
+	                            "title: " + title + "\n" +
+	                            "author: 涎涎\n" +
+	                            "date: " + formattedDateTime + "\n" +
+//	                            "location: " + location + "\n" +
+	                            "icon: page\n" +
+	                            "category:\n" +
+	                            "- " + file.getParentFile().getName() + "\n" +
+	                            "tag:\n" +
+	                            "- " + file.getParentFile().getName() + "\n" +
+	                            "head:\n" +
+	                            "    - - meta\n" +
+	                            "      - name: keywords\n" +
+	                            "        content: " + title + "\n" +
+	                            "---\n";
+	                    String newContent = fileContent + new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+	                    Files.write(Paths.get(file.getAbsolutePath()), newContent.getBytes());
+
+	                    System.out.println("文件 " + fileName + " 修改成功！");
+	                }
+	            }
+	        }
+	    }
+	}
+
 	
 	/**
 	 * <p>Title: deleteLineInFile</p>
@@ -309,96 +425,6 @@ public class VuePressUpdataDirectoryName {
 	
 	
 	
-	/**
-	 * <p>Title: manipulateFiles</p>
-	 * <p>
-	 *    Description:
-	 *    该方法读取文件夹的所有子文件，并做出如下操作：
-			1. 找出所有number-xxxxxx.md的文件;
-			2. 读取该文件的创建时间
-			3. 读取该文件的title title值为 去掉头部的number-以及尾部的.md
-			4. 读取该文件的内容若有以 '# '开头的行并进行如下判断对title进行赋值,
-			如果此值也为number-xxxxxxx.md的格式则也要去掉头部的number-以及尾部的.md，若此值不是number-xxxxxxx.md这种格式，则title的值就为'# '后面的值
-			6. 创建一个数组里面的值为[北京,上海,深圳,广州,成都,杭州,香港,台北]每次随机取一个下标的值并赋值给location
-			7. 将如下格式的文件插入找到的number-xxxxx.md文件的头部
-			---
-			title: title
-			date: XXXX-XXX-XXX XXX:XXXX:XXX
-			author: 涎涎
-			location: location
-			---
-	 *    
-	 *    
-	 * </p>
-	 * <p>Copyright: Copyright (c) 2017</p>
-	 * <p>Company: www.baidudu.com</p>
-	 * @param folderPath
-	 * @throws IOException
-	 * @author xianxian
-	 * @date 2023年5月3日下午11:36:54
-	 * @version 1.0
-	 */
-	public static void manipulateFiles(String folderPath) throws IOException {
-	    // 获取当前文件夹对象
-	    File dir = new File(folderPath);
-	    if (dir.isDirectory()) {
-	        File[] files = dir.listFiles();
-	        for (File file : files) {
-	            if (file.isDirectory()) {
-	                // 递归调用处理子目录
-	                manipulateFiles(file.getAbsolutePath());
-	            } else {
-	                // 获取文件名
-	                String fileName = file.getName();
-	                // 使用正则表达式匹配文件名
-	                Pattern pattern = Pattern.compile("^(\\d+)-(.+\\.md)$");
-	                Matcher matcher = pattern.matcher(fileName);
-	                if (matcher.matches()) {
-	                    // 获取匹配结果中的数字部分
-	                    int number = Integer.parseInt(matcher.group(1));
-	                    // 读取文件创建时间
-	                    BasicFileAttributes attrs = Files.readAttributes(Paths.get(file.getAbsolutePath()), BasicFileAttributes.class);
-
-	                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	                    String formattedDateTime = formatter.format(new Date(attrs.creationTime().toMillis()));
-	                    // 读取文件内容中的 title 和 location
-	                    BufferedReader reader = new BufferedReader(new FileReader(file));
-	                    String line;
-	                    String title = matcher.group(2).replaceAll("^\\d+-|\\.md$", "");
-	                    String location = locations[random.nextInt(locations.length)];
-	                    while ((line = reader.readLine()) != null) {
-	                        if (line.startsWith("# ")) {
-	                            // 若有以 '# '开头的行则修改title
-	                            String subLine = line.substring(2);
-	                            Pattern innerPattern = Pattern.compile("^(\\d+)-(.+\\.md)$");
-	                            Matcher innerMatcher = innerPattern.matcher(subLine);
-	                            if (innerMatcher.matches()) {
-	                                title = innerMatcher.group(2).replaceAll("^\\d+-|\\.md$", "");
-	                            } else {
-	                                title = subLine.trim();
-	                            }
-	                        } else if (line.startsWith("location: ")) {
-	                            // 若有 location 属性则修改 location
-	                            location = line.replaceAll("^location:\\s*", "");
-	                        }
-	                    }
-	                    reader.close();
-	                    // 插入文件头部
-	                    String fileContent = "---\n" +
-	                            "title: " + title + "\n" +
-	                            "date: " + formattedDateTime + "\n" +
-	                            "author: 涎涎\n" +
-	                            "location: " + location + "\n" +
-	                            "---\n";
-	                    String newContent = fileContent + new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-	                    Files.write(Paths.get(file.getAbsolutePath()), newContent.getBytes());
-
-	                    System.out.println("文件 " + fileName + " 修改成功！");
-	                }
-	            }
-	        }
-	    }
-	}
 
 	
 	
