@@ -14,9 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -24,8 +22,8 @@ import java.util.stream.IntStream;
 
 public class VuePressUpdataDirectoryName {
 	
-	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\programBlog";
-//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\test";
+	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope-myblog\\docs\\zh\\programBlog";
+//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope-myblog\\test";
 	final static int NUMBER = 182;
 	
 	
@@ -40,7 +38,9 @@ public class VuePressUpdataDirectoryName {
 		try {
 //			renameAndModifyFiles(FOLDERPATH, NUMBER);//测试通过 22:40
 			
-			manipulateFiles(FOLDERPATH);//测试成功23:38
+//			manipulateFiles(FOLDERPATH);//测试成功23:38
+			replaceHeadContentInMdFile(FOLDERPATH);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -60,6 +60,194 @@ public class VuePressUpdataDirectoryName {
 //			e.printStackTrace();
 //		}
 	}
+	
+	/**
+	 * <p>Title: replaceHeadContentInMdFile</p>
+	 * <p>
+	 *    Description:
+	 *    本方法实现功能，将所有的 number-xxxx.md 形式的md文件的头部内容实现更新或插入
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @author xianxian
+	 * @date 2023年5月8日下午1:26:40
+	 * @version 1.0
+	 * @throws IOException 
+	 */
+	private static void replaceHeadContentInMdFile(String folderPath) throws IOException {
+	    // 获取当前文件夹对象
+	    File dir = new File(folderPath);
+	    if (dir.isDirectory()) {
+	        File[] files = dir.listFiles();
+	        for (File file : files) {
+	            if (file.isDirectory()) {
+	                // 递归调用处理子目录
+	            	replaceHeadContentInMdFile(file.getAbsolutePath());
+	            } else {
+	            	 // 获取文件名
+//	                String fileName = file.getName();
+//	                if(!fileName.equals("README.md") && fileName.substring(fileName.length()-3).equals(".md")) {
+//	                	//读取文件的内容
+//	                	
+//	                	BufferedReader reader = new BufferedReader(new FileReader(file));
+//	                	
+//	                	replaceOrappendContent(reader, file, getHeadContent(file));
+//	                	
+//	                }
+	            	
+	            	processFileHeadcontent(file);
+	            	
+	            	
+	            	
+	            }
+	        }
+	    }
+	}
+	
+	/**
+	 * <p>Title: processFileHeadcontent</p>
+	 * <p>
+	 *    Description:
+	 *    该方法实现了更新或插入头部固定格式的功能
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @param file
+	 * @author xianxian
+	 * @date 2023年5月8日下午4:54:25
+	 * @version 1.0
+	 */
+	public static void processFileHeadcontent(File file) {
+		// 检查文件是否是以 '.md'结尾的且名字不可以为 'README.md'
+		if (file.getName().endsWith(".md") && !file.getName().equals("README.md")) {
+			try {
+				// 读取文件内容为一个字符串
+				String content = new String(Files.readAllBytes(file.toPath()));
+				// 创建一个模式来匹配以 '---' 开头且以 '---' 结尾的内容
+//				Pattern pattern = Pattern.compile("^---\\r?\\n[\\s\\S]*?\\r?\\n---\\r?\\n", Pattern.DOTALL);
+				//与上面的正则等价 兼容liux和windows
+				Pattern pattern = Pattern.compile("^---\\R(.+?)\\R---\\R", Pattern.DOTALL);
+				// 创建一个匹配器来在内容中找到这个内容
+				Matcher matcher = pattern.matcher(content);
+				// 创建一个新的内容字符串，使用所需的格式
+				String newContent = createNewContent(file);
+				
+				// 检查匹配器是否找到这个内容
+				if (matcher.find()) {
+					// 输出匹配器的结果
+//					System.out.println("匹配到的字符串：" + matcher.group());
+
+					// 用新的内容替换这个内容
+					content = matcher.replaceFirst(newContent);
+					 // 重置 Matcher，以便进行新的匹配操作
+				    matcher.reset();
+					System.out.println(file.getName() + "替换了");
+				} else {
+					// 在文件的开头插入新的内容
+					content = newContent + content;
+					System.out.println(file.getName() + "插入了");
+				}
+				// 将修改后的内容写回文件
+				Files.write(file.toPath(), content.getBytes());
+			} catch (IOException e) {
+				// 处理任何IO异常
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	/**
+	 * <p>Title: createNewContent</p>
+	 * <p>
+	 *    Description:
+	 *    
+---
+title: title
+author: 涎涎
+date: 2020-01-01 19:15:12
+icon: page
+order: number
+category:
+- Oracle
+tag:
+- Oracle
+head:
+    - - meta
+      - name: keywords
+        content: title
+---
+	 * </p>
+	 * <p>Copyright: Copyright (c) 2017</p>
+	 * <p>Company: www.baidudu.com</p>
+	 * @param file
+	 * @return
+	 * @author xianxian
+	 * @date 2023年5月8日下午4:53:41
+	 * @version 1.0
+	 */
+	public static String createNewContent(File file) {
+		  // 创建一个字符串构建器来追加新的内容
+		  StringBuilder sb = new StringBuilder();
+		  // 追加开头的 ---
+		  sb.append("---\n");
+		  // 创建一个模式来从文件名中匹配数字和标题
+		  Pattern pattern = Pattern.compile("^(\\d+)-(.+\\.md)$");
+		  // 创建一个匹配器来在文件名中找到数字和标题
+		  Matcher matcher = pattern.matcher(file.getName());
+		  
+		  String oreder = null;
+		  // 检查匹配器是否找到数字和标题
+		  if (matcher.find()) {
+			  oreder = matcher.group(1);
+		    // 追加标题，使用匹配器的第二个组
+		    sb.append("title: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
+		
+		    
+		  }
+		  // 追加作者为 涎涎
+		  sb.append("author: 涎涎\n");
+		  // 追加日期为文件创建时间，使用 yyyy-MM-dd 格式
+		  try {
+		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		    BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+		    sb.append("date: ").append(sdf.format(attr.creationTime().toMillis())).append("\n");
+		  } catch (IOException e) {
+		    // 处理任何IO异常
+		    e.printStackTrace();
+		  }
+		  // 追加图标为 page
+		  sb.append("icon: page\n");
+		  
+		  // 追加顺序，使用匹配器的第一个组
+//		    sb.append("order: ").append(oreder).append("\n");
+		  
+		  // 追加类别为文件父文件夹名字
+		  sb.append("category:\n- ").append(file.getParentFile().getName()).append("\n");
+		  // 追加标签为文件父文件夹名字
+		  sb.append("tag:\n- ").append(file.getParentFile().getName()).append("\n");
+		  // 追加头部，使用 meta 和关键词为标题
+		  sb.append("head:\n- - meta\n- name: keywords\ncontent: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
+		  // 追加结尾的 ---
+		  sb.append("---\n");
+		  // 返回字符串构建器作为一个字符串
+		  return sb.toString();
+		}
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * <p>Title: manipulateFiles</p>
@@ -85,6 +273,7 @@ title: title
 author: 涎涎
 date: 2020-01-01 19:15:12
 icon: page
+order: number
 category:
 - Oracle
 tag:
@@ -134,7 +323,44 @@ head:
 	                    String line;
 	                    String title = matcher.group(2).replaceAll("^\\d+-|\\.md$", "");
 //	                    String location = locations[random.nextInt(locations.length)];
+	                    
+	                 // 匹配以 '---' 开头和结尾的内容
+                    	StringBuilder contentBuilder = new StringBuilder();
+                    	boolean matched = false;
+                    	boolean firstMatch = true;
+	                    
+	                    
 	                    while ((line = reader.readLine()) != null) {
+	                    	//在此处写上刚刚的逻辑
+//	                    	  if (line.trim().equals("---")) {
+//	                    	        if (matched && !firstMatch) {
+//	                    	            // 已经匹配过了，不再继续替换
+//	                    	            break;
+//	                    	        } else {
+//	                    	            matched = true;
+//	                    	            firstMatch = false;
+//	                    	        }
+	                    	
+//	                    	while ((line = reader.readLine()) != null) {
+//	                    	  
+//	                    	    } else if (matched) {
+//	                    	        contentBuilder.append(line).append("\n");
+//	                    	    }
+//	                    	}
+//	                    	if (matched) {
+//	                    	    String oldContent = contentBuilder.toString().trim();
+//	                    	    String newContent = "---\n" + "content: " + content + "\n---\n";
+//	                    	    String fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+//	                    	    String modifiedFileContent = fileContent.replace(oldContent, newContent);
+//	                    	    Files.write(Paths.get(file.getAbsolutePath()), modifiedFileContent.getBytes());
+//	                    	} else {
+//	                    	    String fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+//	                    	    String newContent = "---\n" + "content: " + content + "\n" + fileContent;
+//	                    	    Files.write(Paths.get(file.getAbsolutePath()), newContent.getBytes());
+//	                    	}
+
+	                    	
+	                    	
 	                        if (line.startsWith("# ")) {
 	                            // 若有以 '# '开头的行则修改title
 	                            String subLine = line.substring(2);
@@ -146,10 +372,8 @@ head:
 	                                title = subLine.trim();
 	                            }
 	                        } 
-//	                        else if (line.startsWith("location: ")) {
-//	                            // 若有 location 属性则修改 location
-//	                            location = line.replaceAll("^location:\\s*", "");
-//	                        }
+	                        
+
 	                    }
 	                    reader.close();
 	                    // 插入文件头部
@@ -159,6 +383,7 @@ head:
 	                            "date: " + formattedDateTime + "\n" +
 //	                            "location: " + location + "\n" +
 	                            "icon: page\n" +
+	                            "order:" + number + "\n" +
 	                            "category:\n" +
 	                            "- " + file.getParentFile().getName() + "\n" +
 	                            "tag:\n" +

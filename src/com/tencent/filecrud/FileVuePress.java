@@ -41,40 +41,27 @@ public class FileVuePress {
 	
 	public static void main(String[] args) {
 		
-		int CountFiles = 0;
+
 		File[] sortDirectoryBycountFiles = sortDirectoryBycountFiles(ABSOLUTEPATH);
-		for (File file : sortDirectoryBycountFiles) {
-			CountFiles += file.listFiles(File::isFile).length;
+		for (int i = 0; i < sortDirectoryBycountFiles.length; i++) {
+			File file = sortDirectoryBycountFiles[i];
+
 			String fileName = file.getName();
 			String fileXdPaht = getPathVal(file);
 			// 打印文件名、目录中文件数以及所需格式的路径
 //			System.out.println(file.getName() + " : " + file.listFiles(File::isFile).length + " : " + getPathVal(file));
 
 //			System.out.println("{text: " + '"' +fileName +  '"' + ", link:"+  '"' + fileXdPaht + "/" +  '"' + "},");
-//			System.out.println('"' + fileXdPaht + "/" +  '"' + ":" +  '"' + "structure" +  '"' + ",");
 			
-//			if(fileName.equals("Oracle")) {
-			if(fileName.equals("MySql")) {
-				File[] listFiles = sortMdFileByNum(file.listFiles(File::isFile));
-				//这里需要排序
-//				sortDirectoryBycountFiles(file.getAbsolutePath());
-				
+			//为sidebar赋值
+			System.out.println('"' + fileXdPaht + "/" +  '"' + ": " +  '"' + "structure" +  '"' + ",");
+			
 
-		        
-		        // 输出排序结果
-		        for (File listfile : listFiles) {
-//		            System.out.println(listfile.getName());
-//		            System.out.println('"' + listfile.getName().substring(0, listfile.getName().length()-3) + '"' + "," );
-		        }
-		        
-		        
-				
-			}
 			
-			creatREADMEandWriteContent(file);
+			//为README.md赋值
+//			creatREADMEandWriteContent(file,sortDirectoryBycountFiles.length - i);
 		}
-//		System.out.println("总计博客： " + CountFiles);
-//		System.out.println(getSidebarJsonSbr(sortDirectoryBycountFiles).toString());
+
 	}
 	
 	
@@ -82,7 +69,7 @@ public class FileVuePress {
 	/**
 	 * <p>Title: creatREADMEandWriteContent</p>
 	 * <p>
-	 *    Description:
+	 *    Description: 这个方法会被重复使用，比如创建了新的文件，但是不想手动去更改对应的md功能，那么运行这程序即可
 	 *    本方法实现以下功能：
 	 *    1. 根据所提供的文件夹查找该文件夹内是否含有名为 README.md 的文件
 	 *    2. 若存在则清空其内容写入新的内容 写入的内容 命名变量 readmeContent
@@ -105,11 +92,12 @@ number. 当前文件夹内文件的名字
 	 * <p>Copyright: Copyright (c) 2017</p>
 	 * <p>Company: www.baidudu.com</p>
 	 * @param file
+	 * @param starVal
 	 * @author xianxian
 	 * @date 2023年5月7日下午8:05:55
 	 * @version 1.0
 	 */
-	private static void creatREADMEandWriteContent(File file) {
+	private static void creatREADMEandWriteContent(File file,int starVal) {
 		File readmeFile = new File(file, "README.md");
 		if(isFileExistInDirectory(file, "README.md")) {
 			//存在清空文件内容
@@ -132,7 +120,7 @@ number. 当前文件夹内文件的名字
 		}
 		
 		//获取内容
-		StringBuilder readmeContent = getReadmeContent(file);
+		StringBuilder readmeContent = getReadmeContent(file,starVal);
 		//写入内容
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(readmeFile, true));
@@ -167,12 +155,13 @@ number. 当前文件夹内文件的名字
 	 * <p>Copyright: Copyright (c) 2017</p>
 	 * <p>Company: www.baidudu.com</p>
 	 * @param file
+	 * @param starVal
 	 * @return
 	 * @author xianxian
 	 * @date 2023年5月7日下午8:25:12
 	 * @version 1.0
 	 */
-	private static StringBuilder getReadmeContent(File file) {
+	private static StringBuilder getReadmeContent(File file,int starVal) {
 		StringBuilder readmeContent = new StringBuilder();
 		StringBuilder tipContent = new StringBuilder();
 		//对文件进行排序 按数值由小及大
@@ -181,7 +170,7 @@ number. 当前文件夹内文件的名字
 		String nextLine = "\n";
 		
 		//当前文件夹的文件数量
-		int fileLength = countFiles(file);
+//		int fileLength = -countFiles(file);
 		
 		//获取 README.md 的创建时间
 		String creatTime = "";
@@ -196,7 +185,7 @@ number. 当前文件夹内文件的名字
 				}
 				
 			}else {
-				tipContent.append((i+1) + ". " + getFileRealName(mdFile) + nextLine);
+				tipContent.append(i + ". " + getFileRealName(mdFile) + nextLine);
 			}
 		}
 		
@@ -213,7 +202,7 @@ number. 当前文件夹内文件的名字
 //		number. 当前文件夹内文件的名字
 //		:::  
 		readmeContent.append("---" + nextLine);
-		readmeContent.append("star: " + fileLength + nextLine);
+		readmeContent.append("star: " + starVal + nextLine);
 		readmeContent.append("date: " + creatTime + nextLine);
 		readmeContent.append("category:" + nextLine);
 		readmeContent.append("    - " + file.getName() + nextLine);
