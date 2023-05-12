@@ -10,6 +10,7 @@ import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +44,9 @@ public class FileVuePress {
 		
 
 		File[] sortDirectoryBycountFiles = sortDirectoryBycountFiles(ABSOLUTEPATH);
+		
+		StringBuilder navbarSb = new StringBuilder();
+		
 		for (int i = 0; i < sortDirectoryBycountFiles.length; i++) {
 			File file = sortDirectoryBycountFiles[i];
 
@@ -54,13 +58,56 @@ public class FileVuePress {
 //			System.out.println("{text: " + '"' +fileName +  '"' + ", link:"+  '"' + fileXdPaht + "/" +  '"' + "},");
 			
 			//为sidebar赋值
-			System.out.println('"' + fileXdPaht + "/" +  '"' + ": " +  '"' + "structure" +  '"' + ",");
+//			System.out.println('"' + "/zh" + fileXdPaht  + "/" +  '"' + ": " +  '"' + "structure" +  '"' + ",");
 			
+//			File[] fileArray = file.listFiles(File::isFile);
+//			File fileArrayFirstChild = fileArray[0];
+			
+			
+//			int firstIndex = fileArrayFirstChild.getName().split("-")[0].length() + 1;
+//			int lastIndex = fileArrayFirstChild.getName().length() - 3;
+			
+//			String textName = fileArrayFirstChild.getName().substring(firstIndex,lastIndex);
+//			String linkText = fileArrayFirstChild.getName().substring(0,lastIndex);
+			
+//			System.out.println(textName);
+//			System.out.println(linkText);
 
 			
-			//为README.md赋值
-//			creatREADMEandWriteContent(file,sortDirectoryBycountFiles.length - i);
+			
+			
+//			navbarSb.append("{\n");
+//			navbarSb.append("text:" + '"' +fileName + '"' + ",\n");
+//			navbarSb.append("prefix:" + '"' + fileName + "/" +'"' + ",\n");
+//			navbarSb.append("children: [");
+			
+			
+			
+			
+//			navbarSb.append("{text:" + '"' + textName + '"' + ",link:"+ '"' + linkText+ '"' +"}");
+//			navbarSb.append("]\n");
+//			navbarSb.append("},\n");
+
 		}
+		
+//		System.out.println(navbarSb.toString());
+		
+		//将数组元素反转 由多至少的排序
+//		Collections.reverse(Arrays.asList(sortDirectoryBycountFiles));
+//		
+//		for (int j = 0; j < sortDirectoryBycountFiles.length; j++) {
+//			File file_desc = sortDirectoryBycountFiles[j];
+//			try {
+//				//为README.md赋值
+//				creatREADMEandWriteContent(file_desc,j + 1);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//			
+//		}
+		
+		
+		
 
 	}
 	
@@ -96,8 +143,9 @@ number. 当前文件夹内文件的名字
 	 * @author xianxian
 	 * @date 2023年5月7日下午8:05:55
 	 * @version 1.0
+	 * @throws InterruptedException 
 	 */
-	private static void creatREADMEandWriteContent(File file,int starVal) {
+	private static void creatREADMEandWriteContent(File file,int starVal) throws InterruptedException {
 		File readmeFile = new File(file, "README.md");
 		if(isFileExistInDirectory(file, "README.md")) {
 			//存在清空文件内容
@@ -112,8 +160,11 @@ number. 当前文件夹内文件的名字
 		}else {
 			//不存在创建文件 README.md 
 			try {
+				
+				 Thread.sleep(1200); // 休眠1秒
+				
 				readmeFile.createNewFile();
-				System.out.println(file.getName() + "不存在则创建内容");
+				 System.out.println(file.getName() + "不存在 README.md 文件则创建文件");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -127,7 +178,7 @@ number. 当前文件夹内文件的名字
 			writer.write(readmeContent.toString());
 			writer.close();
 			System.out.println("写入成功");
-			System.out.println(readmeContent.toString());
+//			System.out.println(readmeContent.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -22,8 +22,8 @@ import java.util.stream.IntStream;
 
 public class VuePressUpdataDirectoryName {
 	
-	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope-myblog\\docs\\zh\\programBlog";
-//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope-myblog\\test";
+	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
+//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog\\LittleBlogs\\Windows";
 	final static int NUMBER = 182;
 	
 	
@@ -39,6 +39,7 @@ public class VuePressUpdataDirectoryName {
 //			renameAndModifyFiles(FOLDERPATH, NUMBER);//测试通过 22:40
 			
 //			manipulateFiles(FOLDERPATH);//测试成功23:38
+			//将所有的 number-xxxx.md 形式的md文件的头部内容实现更新或插入
 			replaceHeadContentInMdFile(FOLDERPATH);
 			
 		} catch (IOException e) {
@@ -126,7 +127,8 @@ public class VuePressUpdataDirectoryName {
 				// 创建一个模式来匹配以 '---' 开头且以 '---' 结尾的内容
 //				Pattern pattern = Pattern.compile("^---\\r?\\n[\\s\\S]*?\\r?\\n---\\r?\\n", Pattern.DOTALL);
 				//与上面的正则等价 兼容liux和windows
-				Pattern pattern = Pattern.compile("^---\\R(.+?)\\R---\\R", Pattern.DOTALL);
+//				Pattern pattern = Pattern.compile("^---\\R(.+?)\\R---\\R", Pattern.DOTALL);
+				Pattern pattern = Pattern.compile("^---\\R(.+?)\\R<!-- more -->\\R", Pattern.DOTALL);
 				// 创建一个匹配器来在内容中找到这个内容
 				Matcher matcher = pattern.matcher(content);
 				// 创建一个新的内容字符串，使用所需的格式
@@ -169,9 +171,9 @@ date: 2020-01-01 19:15:12
 icon: page
 order: number
 category:
-- Oracle
+	- Oracle
 tag:
-- Oracle
+	- Oracle
 head:
     - - meta
       - name: keywords
@@ -197,6 +199,7 @@ head:
 		  Matcher matcher = pattern.matcher(file.getName());
 		  
 		  String oreder = null;
+
 		  // 检查匹配器是否找到数字和标题
 		  if (matcher.find()) {
 			  oreder = matcher.group(1);
@@ -205,31 +208,36 @@ head:
 		
 		    
 		  }
+		  // 追加图标为 page
+		  sb.append("icon: page\n");
+		  // 追加顺序，使用匹配器的第一个组
+		    sb.append("order: ").append(oreder).append("\n");
+		  
 		  // 追加作者为 涎涎
 		  sb.append("author: 涎涎\n");
+		  
 		  // 追加日期为文件创建时间，使用 yyyy-MM-dd 格式
 		  try {
-		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		    BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
 		    sb.append("date: ").append(sdf.format(attr.creationTime().toMillis())).append("\n");
 		  } catch (IOException e) {
 		    // 处理任何IO异常
 		    e.printStackTrace();
 		  }
-		  // 追加图标为 page
-		  sb.append("icon: page\n");
-		  
-		  // 追加顺序，使用匹配器的第一个组
-//		    sb.append("order: ").append(oreder).append("\n");
-		  
+
+		 
 		  // 追加类别为文件父文件夹名字
-		  sb.append("category:\n- ").append(file.getParentFile().getName()).append("\n");
+		  sb.append("category:\n    - ").append(file.getParentFile().getName()).append("\n");
 		  // 追加标签为文件父文件夹名字
-		  sb.append("tag:\n- ").append(file.getParentFile().getName()).append("\n");
+		  sb.append("tag:\n    - ").append(file.getParentFile().getName()).append("\n");
 		  // 追加头部，使用 meta 和关键词为标题
-		  sb.append("head:\n- - meta\n- name: keywords\ncontent: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
+		  sb.append("head:\n  - - meta\n    - name: keywords\n      content: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
 		  // 追加结尾的 ---
 		  sb.append("---\n");
+		  //增加more 
+		  sb.append("<!-- more -->\n");
 		  // 返回字符串构建器作为一个字符串
 		  return sb.toString();
 		}
