@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 public class VuePressUpdataDirectoryName {
 	
 	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
+//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\2023";
 //	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog\\LittleBlogs\\Windows";
 	final static int NUMBER = 182;
 	
@@ -189,59 +190,70 @@ head:
 	 * @version 1.0
 	 */
 	public static String createNewContent(File file) {
-		  // 创建一个字符串构建器来追加新的内容
-		  StringBuilder sb = new StringBuilder();
-		  // 追加开头的 ---
-		  sb.append("---\n");
-		  // 创建一个模式来从文件名中匹配数字和标题
-		  Pattern pattern = Pattern.compile("^(\\d+)-(.+\\.md)$");
-		  // 创建一个匹配器来在文件名中找到数字和标题
-		  Matcher matcher = pattern.matcher(file.getName());
-		  
-		  String oreder = null;
-
-		  // 检查匹配器是否找到数字和标题
-		  if (matcher.find()) {
-			  oreder = matcher.group(1);
-		    // 追加标题，使用匹配器的第二个组
-		    sb.append("title: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
 		
-		    
-		  }
-		  // 追加图标为 page
-		  sb.append("icon: page\n");
-		  // 追加顺序，使用匹配器的第一个组
-		    sb.append("order: ").append(oreder).append("\n");
-		  
-		  // 追加作者为 涎涎
-		  sb.append("author: 涎涎\n");
-		  
-		  // 追加日期为文件创建时间，使用 yyyy-MM-dd 格式
-		  try {
-//		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		    BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-		    sb.append("date: ").append(sdf.format(attr.creationTime().toMillis())).append("\n");
-		  } catch (IOException e) {
-		    // 处理任何IO异常
-		    e.printStackTrace();
-		  }
+		// 文件父路径
+		String filePName = file.getParentFile().getName();
+		//获取绝对路径
+		String fileP2Name = file.getParentFile().getParentFile().getName();
+		String fileP3Name = file.getParentFile().getParentFile().getParentFile().getName();
+		String fileXdPaht = fileP3Name + "/" + fileP2Name + "/" + filePName;
 
-		 
-		  // 追加类别为文件父文件夹名字
-		  sb.append("category:\n    - ").append(file.getParentFile().getName()).append("\n");
-		  // 追加标签为文件父文件夹名字
-		  sb.append("tag:\n    - ").append(file.getParentFile().getName()).append("\n");
-		  // 追加头部，使用 meta 和关键词为标题
-		  sb.append("head:\n  - - meta\n    - name: keywords\n      content: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
-		  // 追加结尾的 ---
-		  sb.append("---\n");
-		  //增加more 
-		  sb.append("<!-- more -->\n");
-		  // 返回字符串构建器作为一个字符串
-		  return sb.toString();
+		
+		// 创建一个字符串构建器来追加新的内容
+		StringBuilder sb = new StringBuilder();
+		// 追加开头的 ---
+		sb.append("---\n");
+		// 创建一个模式来从文件名中匹配数字和标题
+		Pattern pattern = Pattern.compile("^(\\d+)-(.+\\.md)$");
+		// 创建一个匹配器来在文件名中找到数字和标题
+		Matcher matcher = pattern.matcher(file.getName());
+
+		String oreder = null;
+
+		// 检查匹配器是否找到数字和标题
+		if (matcher.find()) {
+			oreder = matcher.group(1);
+			// 追加标题，使用匹配器的第二个组
+			sb.append("title: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
+
 		}
-	
+		// 追加图标为 page
+		sb.append("icon: page\n");
+		// 追加顺序，使用匹配器的第一个组
+		sb.append("order: ").append(oreder).append("\n");
+
+		// 追加作者为 涎涎
+		sb.append("author: 涎涎\n");
+
+		// 追加日期为文件创建时间，使用 yyyy-MM-dd 格式
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+			sb.append("date: ").append(sdf.format(attr.creationTime().toMillis())).append("\n");
+		} catch (IOException e) {
+			// 处理任何IO异常
+			e.printStackTrace();
+		}
+
+		// 是否为原创
+		sb.append("isOriginal: true").append("\n");
+		// 永久url地址
+		sb.append("permalinkPattern: " + fileXdPaht + "/" + filePName.toLowerCase() + oreder + ".html").append("\n");
+		// 追加类别为文件父文件夹名字
+		sb.append("category:\n    - ").append(filePName).append("\n");
+		// 追加标签为文件父文件夹名字
+		sb.append("tag:\n    - ").append(filePName).append("\n");
+		// 追加头部，使用 meta 和关键词为标题
+		sb.append("head:\n  - - meta\n    - name: keywords\n      content: ")
+				.append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
+		// 追加结尾的 ---
+		sb.append("---\n");
+		// 增加more
+		sb.append("<!-- more -->\n");
+		// 返回字符串构建器作为一个字符串
+		return sb.toString();
+	}
 	
 	
 	

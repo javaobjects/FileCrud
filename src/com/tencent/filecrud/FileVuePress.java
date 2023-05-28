@@ -93,18 +93,18 @@ public class FileVuePress {
 //		System.out.println(navbarSb.toString());
 		
 		//将数组元素反转 由多至少的排序
-//		Collections.reverse(Arrays.asList(sortDirectoryBycountFiles));
-//		
-//		for (int j = 0; j < sortDirectoryBycountFiles.length; j++) {
-//			File file_desc = sortDirectoryBycountFiles[j];
-//			try {
-//				//为README.md赋值
-//				creatREADMEandWriteContent(file_desc,j + 1);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//			
-//		}
+		Collections.reverse(Arrays.asList(sortDirectoryBycountFiles));
+		
+		for (int j = 0; j < sortDirectoryBycountFiles.length; j++) {
+			File file_desc = sortDirectoryBycountFiles[j];
+			try {
+				//为README.md赋值
+				creatREADMEandWriteContent(file_desc,j + 1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+		}
 		
 		
 		
@@ -368,7 +368,7 @@ number. 当前文件夹内文件的名字
 	 * @date 2023年5月3日下午3:50:55
 	 * @version 1.0
 	 */
-	private static String getPathVal(File file) {
+	public static String getPathVal(File file) {
 		// 将当前文件的绝对路径分割成多个路径段
 		String[] pathSegments = file.getAbsolutePath().split("\\\\");
 		// 创建一个新的空列表来存储我们感兴趣的路径段
