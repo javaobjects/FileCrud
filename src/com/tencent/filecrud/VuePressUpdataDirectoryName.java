@@ -86,21 +86,7 @@ public class VuePressUpdataDirectoryName {
 	                // 递归调用处理子目录
 	            	replaceHeadContentInMdFile(file.getAbsolutePath());
 	            } else {
-	            	 // 获取文件名
-//	                String fileName = file.getName();
-//	                if(!fileName.equals("README.md") && fileName.substring(fileName.length()-3).equals(".md")) {
-//	                	//读取文件的内容
-//	                	
-//	                	BufferedReader reader = new BufferedReader(new FileReader(file));
-//	                	
-//	                	replaceOrappendContent(reader, file, getHeadContent(file));
-//	                	
-//	                }
-	            	
 	            	processFileHeadcontent(file);
-	            	
-	            	
-	            	
 	            }
 	        }
 	    }
@@ -119,7 +105,7 @@ public class VuePressUpdataDirectoryName {
 	 * @date 2023年5月8日下午4:54:25
 	 * @version 1.0
 	 */
-	public static void processFileHeadcontent(File file) {
+	private static void processFileHeadcontent(File file) {
 		// 检查文件是否是以 '.md'结尾的且名字不可以为 'README.md'
 		if (file.getName().endsWith(".md") && !file.getName().equals("README.md")) {
 			try {
