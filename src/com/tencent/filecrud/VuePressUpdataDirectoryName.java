@@ -22,8 +22,8 @@ import java.util.stream.IntStream;
 
 public class VuePressUpdataDirectoryName {
 	
-	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
-//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\2023";
+//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
+	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\2023";
 //	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog\\LittleBlogs\\Windows";
 	final static int NUMBER = 182;
 	
