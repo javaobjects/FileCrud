@@ -28,8 +28,8 @@ import java.util.List;
  */
 public class VuepressREADME {
 	
-//	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
-	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-theme-hope\\test\\t1";
+	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
+//	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-theme-hope\\test\\t1";
 //	final static String ABSOLUTEPATH = "E:\\Google\\vuepress-starter\\otherBlog";
 
 	public static void main(String[] args) {

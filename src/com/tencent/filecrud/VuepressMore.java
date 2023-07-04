@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 public class VuepressMore {
 	
 //	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
-//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\2023";
-	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\test\\t1";
+	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\2023";
+//	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\test\\t1";
 //	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog\\LittleBlogs\\Windows";
 
 	public static void main(String[] args) {
