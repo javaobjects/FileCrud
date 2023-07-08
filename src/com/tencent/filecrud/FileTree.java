@@ -12,8 +12,11 @@ import java.io.File;
  * @date 2023年7月4日上午10:10:33
  */
 public class FileTree {
-    private static final String[] IGNORED_FOLDERS = {"node_modules", ".git",".idea"};
-    private static final String PROJECTABSOULTPATH = "E:\\Google\\Inc";
+    private static final String[] IGNORED_FOLDERS = {
+    		"node_modules", ".git",".idea","resources","target",".externalToolBuilders",
+    		".gradle",".metadata",".settings",".svn"
+    		};
+    private static final String PROJECTABSOULTPATH = "E:\\Google\\crm";
     
     public static void main(String[] args) {
         File file = new File(PROJECTABSOULTPATH);
@@ -37,7 +40,7 @@ public class FileTree {
         for (int i = 0; i < level; i++) {
             sb.append("|   ");
         }
-        sb.append("+- ").append(file.getName());
+        sb.append("+- ").append(file.getName()).append(" -- ");
         System.out.println(sb.toString());
     }
 
