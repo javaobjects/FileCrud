@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class VuepressMore {
 	
 //	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog";
-	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\2023";
+	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\2023\\ClientSideLanguage\\Vue";
 //	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\test\\t1";
 //	final static String FOLDERPATH = "E:\\Google\\vuepress-theme-hope\\docs\\zh\\programBlog\\LittleBlogs\\Windows";
 
@@ -84,24 +84,39 @@ public class VuepressMore {
 			try {
 				// 读取文件内容为一个字符串
 				String content = new String(Files.readAllBytes(file.toPath()));
-				// 创建一个模式来匹配以 '---' 开头且以 '<!-- more -->' 结尾的内容
-				Pattern pattern = Pattern.compile("^---\\R(.+?)\\R<!-- more -->\\R", Pattern.DOTALL);
-				// 创建一个匹配器来在内容中找到这个内容
-				Matcher matcher = pattern.matcher(content);
-				// 创建一个新的内容字符串，使用所需的格式
-				String newContent = createNewContent(file);
 				
-				// 检查匹配器是否找到这个内容
-				if (matcher.find()) {
+				Pattern pattern_sticky = Pattern.compile("^---\\R(.+?)\\R<!-- sticky -->\\R", Pattern.DOTALL);
+				Matcher matcher_sticky = pattern_sticky.matcher(content);
+				
+				if(matcher_sticky.find()) {
 					// 用新的内容替换这个内容
-					content = matcher.replaceFirst(newContent);
+					content = matcher_sticky.replaceFirst(createNewContent(file,true));
 					 // 重置 Matcher，以便进行新的匹配操作
-				    matcher.reset();
-					System.out.println(file.getName() + "替换了");
-				} else {
-					// 在文件的开头插入新的内容
-					content = newContent + content;
-					System.out.println(file.getName() + "插入了");
+					matcher_sticky.reset();
+					System.out.println(file.getName() + "置顶替换了");
+				}else {
+					// 创建一个模式来匹配以 '---' 开头且以 '<!-- more -->' 结尾的内容
+					Pattern pattern = Pattern.compile("^---\\R(.+?)\\R<!-- more -->\\R", Pattern.DOTALL);
+					
+					// 创建一个匹配器来在内容中找到这个内容
+					Matcher matcher = pattern.matcher(content);
+					// 创建一个新的内容字符串，使用所需的格式
+					String newContent = createNewContent(file,false);
+					
+					// 检查匹配器是否找到这个内容
+					
+					
+					if (matcher.find()) {
+						// 用新的内容替换这个内容
+						content = matcher.replaceFirst(newContent);
+						 // 重置 Matcher，以便进行新的匹配操作
+					    matcher.reset();
+						System.out.println(file.getName() + "替换了");
+					} else {
+						// 在文件的开头插入新的内容
+						content = newContent + content;
+						System.out.println(file.getName() + "插入了");
+					}
 				}
 				// 将修改后的内容写回文件
 				Files.write(file.toPath(), content.getBytes());
@@ -137,12 +152,13 @@ head:
 	 * <p>Copyright: Copyright (c) 2017</p>
 	 * <p>Company: www.baidudu.com</p>
 	 * @param file
+	 * @param sticky 是否置顶
 	 * @return
 	 * @author xianxian
 	 * @date 2023年5月8日下午4:53:41
 	 * @version 1.0
 	 */
-	public static String createNewContent(File file) {
+	public static String createNewContent(File file,Boolean sticky) {
 		
 		// 文件父路径
 		String filePName = file.getParentFile().getName();
@@ -170,24 +186,38 @@ head:
 			sb.append("title: ").append(matcher.group(2).replaceAll("^\\d+-|\\.md$", "")).append("\n");
 
 		}
+		
+		SimpleDateFormat sdf = null;
+		long millis = 0;
+		// 追加日期为文件创建时间，使用 yyyy-MM-dd 格式
+		try {
+			sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		    sdf = new SimpleDateFormat("yyyy-MM-dd");
+			BasicFileAttributes readAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+			//获取文件的创建时间
+			millis = readAttributes.creationTime().toMillis();
+		} catch (IOException e) {
+			// 处理任何IO异常
+			e.printStackTrace();
+		}
+		
 		// 追加图标为 page
 		sb.append("icon: page\n");
+		
+		//是否置顶
+		if(sticky) {
+			sb.append("sticky: ").append(
+					new SimpleDateFormat("yyyyMMddHHmmss").format(millis)
+					).append("\n");
+		}
+		
 		// 追加顺序，使用匹配器的第一个组
 		sb.append("order: ").append(oreder).append("\n");
 
 		// 追加作者为 涎涎
 		sb.append("author: 涎涎\n");
 
-		// 追加日期为文件创建时间，使用 yyyy-MM-dd 格式
-		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-			sb.append("date: ").append(sdf.format(attr.creationTime().toMillis())).append("\n");
-		} catch (IOException e) {
-			// 处理任何IO异常
-			e.printStackTrace();
-		}
+		sb.append("date: ").append(sdf.format(millis)).append("\n");
 
 		// 是否为原创
 		sb.append("isOriginal: true").append("\n");
@@ -204,6 +234,10 @@ head:
 		sb.append("---\n");
 		// 增加more
 		sb.append("<!-- more -->\n");
+		if(sticky) {
+			// 增加sticky
+			sb.append("<!-- sticky -->\n");
+		}
 		// 返回字符串构建器作为一个字符串
 		return sb.toString();
 	}
